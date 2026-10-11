@@ -9,6 +9,8 @@ void Overdrive::Init()
     SetDrive(.5f);
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float Overdrive::Process(float in)
 {
     float pre = pre_gain_ * in;

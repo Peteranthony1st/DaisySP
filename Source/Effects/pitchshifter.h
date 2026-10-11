@@ -88,6 +88,15 @@ class PitchShifter
 
     /** process pitch shifter
     */
+    // ITCM-placed: real-time DSP hot path, see
+    // /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h -- a
+    // uniquely-suffixed section name, not plain ".itcm_text", because
+    // this is an inline (COMDAT/weak) function: GCC errors with a
+    // "section type conflict" if an inline function and a regular
+    // (non-inline) function share the exact same section name. The
+    // linker script's *(.itcm_text*) wildcard still sweeps this into
+    // the same ITCMRAM output section regardless of the exact suffix.
+    __attribute__((section(".itcm_text.pitchshifter_process")))
     float Process(float &in)
     {
         float val, fade1, fade2;

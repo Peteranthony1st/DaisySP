@@ -14,6 +14,8 @@ void Decimator::Init()
     bit_overflow_      = 1.0f;
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float Decimator::Process(float input)
 {
     int32_t temp;

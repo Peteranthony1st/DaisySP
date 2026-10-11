@@ -19,6 +19,8 @@ void ChorusEngine::Init(float sample_rate)
     SetLfoDepth(.9f);
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float ChorusEngine::Process(float in)
 {
     float lfo_sig = ProcessLfo();
@@ -62,6 +64,8 @@ void ChorusEngine::SetFeedback(float feedback)
     feedback_ = fclamp(feedback, 0.f, 1.f);
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float ChorusEngine::ProcessLfo()
 {
     lfo_phase_ += lfo_freq_;
@@ -92,6 +96,8 @@ void Chorus::Init(float sample_rate)
     sigl_ = sigr_ = 0.f;
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float Chorus::Process(float in)
 {
     sigl_ = 0.f;

@@ -19,6 +19,8 @@ void Flanger::Init(float sample_rate)
     SetLfoDepth(.9);
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float Flanger::Process(float in)
 {
     float lfo_sig = ProcessLfo();
@@ -63,6 +65,8 @@ void Flanger::SetDelayMs(float ms)
     lfo_amp_ = fmin(lfo_amp_, delay_); //clip this if needed
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float Flanger::ProcessLfo()
 {
     lfo_phase_ += lfo_freq_;

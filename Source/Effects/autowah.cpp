@@ -27,6 +27,8 @@ void Autowah::Init(float sample_rate)
     }
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float Autowah::Process(float in)
 {
     float out;

@@ -25,6 +25,8 @@ void PhaserEngine::Init(float sample_rate)
     SetLfoDepth(.9);
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float PhaserEngine::Process(float in)
 {
     float lfo_sig = ProcessLfo();
@@ -57,6 +59,8 @@ void PhaserEngine::SetFeedback(float feedback)
     feedback_ = fclamp(feedback, 0.f, .75f);
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float PhaserEngine::ProcessLfo()
 {
     lfo_phase_ += lfo_freq_;
@@ -88,6 +92,8 @@ void Phaser::Init(float sample_rate)
     gain_frac_ = .5f;
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float Phaser::Process(float in)
 {
     float sig = 0.f;

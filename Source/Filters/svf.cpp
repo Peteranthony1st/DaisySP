@@ -28,6 +28,8 @@ void Svf::Init(float sample_rate)
     fc_max_    = sr_ / 3.f;
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 void Svf::Process(float in)
 {
     input_ = in;
