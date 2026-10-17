@@ -103,7 +103,12 @@ float Phaser::Process(float in)
         sig += engines_[i].Process(in);
     }
 
-    return sig;
+    // Each engine returns a 50/50 dry/wet mix of its own, so summing
+    // poles_ of them stacks the dry input poles_/2 times over -- gain_frac_
+    // (set in Init(), same role Chorus::Process()'s own gain_frac_ already
+    // plays) scales that back down instead of letting the dry signal
+    // drown out the actual phased content.
+    return sig * gain_frac_;
 }
 
 void Phaser::SetPoles(int poles)
