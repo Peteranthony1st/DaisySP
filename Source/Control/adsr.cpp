@@ -92,6 +92,8 @@ void Adsr::SetTimeConstant(float timeInS, float& time, float& coeff)
 }
 
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float Adsr::Process(bool gate)
 {
     float out = 0.0f;

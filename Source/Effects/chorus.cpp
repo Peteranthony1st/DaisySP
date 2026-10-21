@@ -116,11 +116,16 @@ float Chorus::Process(float in)
     return sigl_;
 }
 
+// Tiny, but a real standalone (non-inlined) miss -- called every sample
+// from LooperLayer::ProcessEffectsChain() (ITCM) whenever Chorus is the
+// active effect, same reasoning as Process()'s own comment above.
+__attribute__((section(".itcm_text")))
 float Chorus::GetLeft()
 {
     return sigl_;
 }
 
+__attribute__((section(".itcm_text")))
 float Chorus::GetRight()
 {
     return sigr_;

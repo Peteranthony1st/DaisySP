@@ -9,6 +9,8 @@ void Wavefolder::Init()
     offset_ = 0.0f;
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float Wavefolder::Process(float in)
 {
     float ft, sgn;
