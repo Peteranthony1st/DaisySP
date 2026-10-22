@@ -52,6 +52,29 @@ class Adsr
      \param hard  resets the history to zero, results in a click.
      */
     void Retrigger(bool hard);
+    /**
+     \function ForceRelease forces the envelope directly into the
+     release phase from wherever its own level currently sits, bypassing
+     Process()'s own gate-edge detection -- same reasoning Retrigger()
+     already has for forcing attack: a caller that explicitly knows a
+     note just ended (not just inferring it from a sampled gate boolean)
+     needs a way to say so directly. Confirmed as a real, reproducible
+     bug without this: if a NoteOn is immediately followed by a NoteOff
+     before Process() is ever called with gate=true in between (a real
+     risk with a fast arpeggiator's short note durations, or just two
+     control-rate MIDI events landing in the same inter-audio-block
+     gap), Process()'s own `if(!gate && gate_)` falling-edge check can
+     never fire -- gate_ (this envelope's own last-seen gate) never
+     recorded the rising edge either, so it stays false throughout,
+     and the envelope keeps climbing through attack into decay and
+     holds at its sustain level forever (decay's own target is a
+     positive sustain level, so its own `out < 0.f` idle check never
+     fires) -- a genuinely stuck note, with nothing externally wrong at
+     all (the caller's own held-note tracking is already correctly
+     cleared; the problem is purely this envelope's own internal gate_
+     memory never having observed the moment it needed to).
+     */
+    void ForceRelease();
     /** Processes one sample through the filter and returns one sample.
         \param gate - trigger the envelope, hold it to sustain 
     */

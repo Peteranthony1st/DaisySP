@@ -12,6 +12,7 @@ void OscillatorBank::Init(float sample_rate)
     next_sample_ = 0.0f;
     segment_     = 0.0f;
 
+    freq_ratio_ = 0.f;
     frequency_  = 0.f;
     saw_8_gain_ = 0.0f;
     saw_4_gain_ = 0.0f;
@@ -37,17 +38,31 @@ float OscillatorBank::Process()
     if(recalc_)
     {
         recalc_ = false;
-        frequency_ *= 8.0f;
+
+        // Recomputed fresh from the stable freq_ratio_ every time, not
+        // scaled in place on top of frequency_'s own previous value --
+        // recalc_ can fire from SetAmplitudes()/SetSingleAmp() alone
+        // (no fresh SetFreq() call in between), and scaling frequency_
+        // itself every such pass compounded the *8 and the octave-shift
+        // below across repeated recalcs, eventually driving the "shift"
+        // count past 7 -- at which point the unsigned `7 - shift` below
+        // underflowed to a huge value and walked both registration_[]
+        // and unshifted_registration_[] far out of bounds. Confirmed on
+        // real hardware: turning the Ensemble registration macro while
+        // holding a note corrupted the pitch/mix instead of just
+        // changing the registration.
+        float freq = freq_ratio_ * 8.0f;
 
         // Deal with very high frequencies by shifting everything 1 or 2 octave
         // down: Instead of playing the 1st harmonic of a 8kHz wave, we play the
         // second harmonic of a 4kHz wave.
         size_t shift = 0;
-        while(frequency_ > 0.5f)
+        while(freq > 0.5f)
         {
             shift += 2;
-            frequency_ *= 0.5f;
+            freq *= 0.5f;
         }
+        frequency_ = freq;
 
         for(int i = 0; i < 7; i++)
         {
@@ -115,10 +130,10 @@ float OscillatorBank::Process()
 
 void OscillatorBank::SetFreq(float freq)
 {
-    freq       = freq / sample_rate_;
-    freq       = freq > 0.5f ? 0.5f : freq;
-    recalc_    = cmp(freq, frequency_) || recalc_;
-    frequency_ = freq;
+    freq        = freq / sample_rate_;
+    freq        = freq > 0.5f ? 0.5f : freq;
+    recalc_     = cmp(freq, freq_ratio_) || recalc_;
+    freq_ratio_ = freq;
 }
 
 void OscillatorBank::SetAmplitudes(const float* amplitudes)

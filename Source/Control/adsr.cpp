@@ -29,6 +29,12 @@ void Adsr::Retrigger(bool hard)
         x_ = 0.f;
 }
 
+void Adsr::ForceRelease()
+{
+    mode_ = ADSR_SEG_RELEASE;
+    gate_ = false;
+}
+
 void Adsr::SetTime(int seg, float time)
 {
     switch(seg)

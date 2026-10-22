@@ -72,6 +72,14 @@ class OscillatorBank
     float registration_[7];
     float unshifted_registration_[7];
 
+    // frequency_ is the scaled/octave-shifted phase increment Process()
+    // actually uses -- freq_ratio_ is the stable, un-scaled freq/
+    // sample_rate_ ratio SetFreq() itself sets, recomputed into
+    // frequency_ fresh on every recalc_ pass (see Process()'s own
+    // comment) rather than scaling frequency_ in place, which would
+    // otherwise compound every time recalc_ fires without a fresh
+    // SetFreq() call (e.g. from SetAmplitudes()/SetSingleAmp() alone).
+    float freq_ratio_;
     float frequency_;
     float saw_8_gain_;
     float saw_4_gain_;
