@@ -30,6 +30,8 @@ void OscillatorBank::Init(float sample_rate)
     SetFreq(440.f);
 }
 
+// ITCM-placed: real-time DSP hot path, see /Users/peterfarmer/Downloads/PZD-POD-4XLOOPER/src/itcm.h
+__attribute__((section(".itcm_text")))
 float OscillatorBank::Process()
 {
     if(recalc_)
