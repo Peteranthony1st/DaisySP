@@ -35,6 +35,9 @@ void OscillatorBank::Init(float sample_rate)
 __attribute__((section(".itcm_text")))
 float OscillatorBank::Process()
 {
+    // Taken before recalc_ is cleared below: a registration or pitch
+    // change needs the saw gains redone too.
+    const bool regs_changed = recalc_;
     if(recalc_)
     {
         recalc_ = false;
@@ -75,8 +78,12 @@ float OscillatorBank::Process()
         }
     }
 
-    if(recalc_gain_ || recalc_)
+    // Only when something changed. recalc_gain_ was never cleared, so
+    // these four were recomputed every sample -- which also hid that
+    // the test read recalc_ after it had already been cleared above.
+    if(recalc_gain_ || regs_changed)
     {
+        recalc_gain_ = false;
         saw_8_gain_ = (registration_[0] + 2.0f * registration_[1]) * gain_;
         saw_4_gain_
             = (registration_[2] - registration_[1] + 2.0f * registration_[3])
